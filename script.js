@@ -26,7 +26,7 @@ const LAST_NAMES = ['Santoso', 'Wijaya', 'Kusuma', 'Lestari', 'Setiawan', 'Prata
 const CITIES = ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang', 'Makassar'];
 const STREET_NAMES = ['Jalan Sudirman', 'Jalan Thamrin', 'Jalan Gatot Subroto', 'Jalan Diponegoro'];
 const STATUSES = ['SUCCESS', 'FAILED', 'PENDING', 'SETTLEMENT', 'CANCELLED', 'EXPIRED'];
-const DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'bri.co.id'];
+const DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com'];
 
 // --- Utility Functions for Data Generation ---
 const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -39,6 +39,16 @@ const randomFullName = () => `${randomItem(FIRST_NAMES)} ${randomItem(LAST_NAMES
 const randomEmail = () => `${randomItem(FIRST_NAMES).toLowerCase()}.${randomInt(1,99)}@${randomItem(DOMAINS)}`;
 const randomPhoneNumber = () => `08${randomInt(10, 99)}${randomString(8, '0123456789')}`;
 const randomDate = (start = new Date(2022, 0, 1), end = new Date()) => new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+const formatCustomDate = (date) => {
+            const pad = (num) => num.toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const month = pad(date.getMonth() + 1);
+            const day = pad(date.getDate());
+            const hours = pad(date.getHours());
+            const minutes = pad(date.getMinutes());
+            const seconds = pad(date.getSeconds());
+            return `${year}${month}${day}${hours}${minutes}${seconds}`;
+        };
 const randomId = (prefix = 'ID') => `${prefix}${Date.now()}${randomInt(100, 999)}`;
 const randomAddress = () => `${randomItem(STREET_NAMES)} No. ${randomInt(1, 150)}, ${randomItem(CITIES)}`;
 
@@ -49,7 +59,7 @@ const generateSmartValue = (header) => {
     if (lowerHeader.includes('name')) return randomFullName();
     if (lowerHeader.includes('phone') || lowerHeader.includes('mobile') || lowerHeader.includes('nomorhp')) return randomPhoneNumber();
     if (lowerHeader.includes('amount') || lowerHeader.includes('price') || lowerHeader.includes('balance') || lowerHeader.includes('harga') || lowerHeader.includes('total')) return randomAmount(10000, 5000000);
-    if (lowerHeader.includes('date') || lowerHeader.includes('time') || lowerHeader.includes('waktu') || lowerHeader.includes('tanggal')) return randomDate().toISOString().slice(0, 19).replace('T', ' ');
+    if (lowerHeader.includes('date') || lowerHeader.includes('time') || lowerHeader.includes('waktu') || lowerHeader.includes('tanggal')) return formatCustomDate(randomDate());
     if (lowerHeader.includes('status')) return randomItem(STATUSES);
     if (lowerHeader.includes('id') || lowerHeader.includes('ref') || lowerHeader.includes('nomor') || lowerHeader.includes('trx')) return randomId(header.substring(0,3).toUpperCase());
     if (lowerHeader.includes('address') || lowerHeader.includes('alamat')) return randomAddress();

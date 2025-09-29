@@ -7,6 +7,7 @@
     <title>Custom Report Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel=stylesheet href="./styles.css">
 </head>
 
@@ -29,81 +30,179 @@
             <!-- Configuration Panel -->
             <aside class="lg:col-span-1 bg-white p-6 rounded-xl shadow-md h-fit">
                 <h2 class="text-xl font-semibold mb-4 border-b pb-2">Configuration</h2>
-                <form id="generator-form" class="space-y-6">
-                    <!-- Column Headers -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Header Columns</label>
-                        <div id="headers-container">
-                            <div class="header-input-group">
-                                <input type="text" name="header" value="TransactionID"
-                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                                    placeholder="e.g., TransactionID" required>
-                                <!-- First element can't be removed -->
-                            </div>
-                            <div class="header-input-group">
-                                <input type="text" name="header" value="ReferenceNo"
-                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                                    placeholder="e.g., ReferenceNo" required>
-                                <button type="button"
-                                    class="remove-header-btn text-red-500 hover:text-red-700 p-1.5 rounded-full"><svg
-                                        class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg></button>
-                            </div>
-                            <div class="header-input-group">
-                                <input type="text" name="header" value="Amount"
-                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                                    placeholder="e.g., Amount" required>
-                                <button type="button"
-                                    class="remove-header-btn text-red-500 hover:text-red-700 p-1.5 rounded-full"><svg
-                                        class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg></button>
-                            </div>
+
+                <!-- Tab Navigation -->
+                <div class="mb-6">
+                    <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+                        <button id="tab-single"
+                            class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 bg-white text-blue-700 shadow-sm">
+                            Single Row
+                        </button>
+                        <button id="tab-bulk"
+                            class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700">
+                            Bulk Generation
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 1: Single Row Generation -->
+                <div id="tab-content-single" class="tab-content">
+                    <form id="single-generator-form" class="space-y-6">
+                        <!-- Report Type Selection -->
+                        <div>
+                            <label for="single-report-type" class="block text-sm font-medium text-gray-700 mb-2">Report
+                                Type</label>
+                            <select id="single-report-type" name="single-report-type"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                <option value="">Select Report Type</option>
+                                <option value="ReportPegadaianBayar">Report Pegadaian Bayar</option>
+                                <option value="ReportPegadaianCicil">Report Pegadaian Cicil</option>
+                                <option value="ReportBrimoASDP">Report Brimo ASDP</option>
+                            </select>
                         </div>
-                        <button type="button" id="add-header-btn"
-                            class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">+ Add Another
-                            Header</button>
-                    </div>
 
-                    <!-- Record Count -->
-                    <div>
-                        <label for="record-count" class="block text-sm font-medium text-gray-700 mb-1">Number of
-                            Records</label>
-                        <input type="number" id="record-count" name="record-count" value="10" min="1" max="10000"
-                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-                    </div>
+                        <!-- JSON Inputs Container -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">JSON Data</label>
+                            <div id="json-inputs-container" class="space-y-3">
+                                <div class="json-input-group">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">JSON #1</span>
+                                        <button type="button"
+                                            class="remove-json-btn text-red-500 hover:text-red-700 p-1 rounded-full hidden">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <textarea name="json-input" rows="4"
+                                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-mono"
+                                        placeholder="Paste your JSON data here..."></textarea>
+                                </div>
+                            </div>
+                            <button type="button" id="add-json-btn"
+                                class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                + Add Another JSON
+                            </button>
+                        </div>
 
-                    <!-- Delimiter -->
-                    <div>
-                        <label for="delimiter" class="block text-sm font-medium text-gray-700 mb-1">CSV
-                            Delimiter</label>
-                        <select id="delimiter" name="delimiter"
-                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-                            <option value="," selected>Comma (,)</option>
-                            <option value=";">Semicolon (;)</option>
-                            <option value="\t">Tab</option>
-                            <option value="|">Pipe (|)</option>
-                        </select>
-                    </div>
+                        <!-- Delimiter -->
+                        <div>
+                            <label for="single-delimiter" class="block text-sm font-medium text-gray-700 mb-1">CSV
+                                Delimiter</label>
+                            <select id="single-delimiter" name="single-delimiter"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                <option value="," selected>Comma (,)</option>
+                                <option value=";">Semicolon (;)</option>
+                                <option value="\t">Tab</option>
+                                <option value="|">Pipe (|)</option>
+                            </select>
+                        </div>
 
-                    <!-- File Name -->
-                    <div>
-                        <label for="file-name" class="block text-sm font-medium text-gray-700 mb-1">CSV File
-                            Name</label>
-                        <input type="text" id="file-name" name="file-name" value="report"
-                            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-                    </div>
+                        <!-- File Name -->
+                        <div>
+                            <label for="single-file-name" class="block text-sm font-medium text-gray-700 mb-1">CSV File
+                                Name</label>
+                            <input type="text" id="single-file-name" name="single-file-name" value="report"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                        </div>
 
-                    <button type="submit"
-                        class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 shadow-sm">
-                        Generate Report
-                    </button>
-                </form>
+                        <button type="submit"
+                            class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 shadow-sm">
+                            Generate Report
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Bulk Generation -->
+                <div id="tab-content-bulk" class="tab-content hidden">
+                    <form id="bulk-generator-form" class="space-y-6">
+                        <!-- Report Type Selection -->
+                        <div>
+                            <label for="bulk-report-type" class="block text-sm font-medium text-gray-700 mb-2">Report
+                                Type</label>
+                            <select id="bulk-report-type" name="bulk-report-type"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                <option value="">Select Report Type</option>
+                                <option value="ReportPegadaianBayar">Report Pegadaian Bayar</option>
+                                <option value="ReportPegadaianCicil">Report Pegadaian Cicil</option>
+                                <option value="ReportBrimoASDP">Report Brimo ASDP</option>
+                            </select>
+                        </div>
+
+                        <!-- JSON Input -->
+                        <div>
+                            <label for="bulk-json-input" class="block text-sm font-medium text-gray-700 mb-2">JSON
+                                Data</label>
+                            <textarea id="bulk-json-input" name="bulk-json-input" rows="8"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-mono"
+                                placeholder="Paste your JSON data here...">{
+  "feRequest": {
+    "client_id": "CLIENT123",
+    "jenisTransaksi": "BAYAR",
+    "norek": "1234567890",
+    "reffSwitching": "REF123456",
+    "amount": "500000",
+    "surcharge": "2500",
+    "channelIdPegadaian": "CH001",
+    "noIdentitas": "ID987654321",
+    "reffBiller": "BILLER789",
+    "clientId": "CLIENT456"
+  },
+  "feResponse": {
+    "data": {
+      "tglTransaksi": "20241201120000",
+      "nominalUangMuka": "100000",
+      "administrasi": "5000"
+    },
+    "responseCode": "00",
+    "feeAmount": "1000"
+  },
+  "esb": {
+    "creditAmount": "495000"
+  }
+}</textarea>
+                            <p class="text-xs text-gray-500 mt-1">Enter the JSON data that will be used to generate the
+                                report values</p>
+                        </div>
+
+                        <!-- Record Count -->
+                        <div>
+                            <label for="bulk-record-count" class="block text-sm font-medium text-gray-700 mb-1">Number
+                                of Records</label>
+                            <input type="number" id="bulk-record-count" name="bulk-record-count" value="10" min="1"
+                                max="10000"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                        </div>
+
+                        <!-- Delimiter -->
+                        <div>
+                            <label for="bulk-delimiter" class="block text-sm font-medium text-gray-700 mb-1">CSV
+                                Delimiter</label>
+                            <select id="bulk-delimiter" name="bulk-delimiter"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                                <option value="," selected>Comma (,)</option>
+                                <option value=";">Semicolon (;)</option>
+                                <option value="\t">Tab</option>
+                                <option value="|">Pipe (|)</option>
+                            </select>
+                        </div>
+
+                        <!-- File Name -->
+                        <div>
+                            <label for="bulk-file-name" class="block text-sm font-medium text-gray-700 mb-1">CSV File
+                                Name</label>
+                            <input type="text" id="bulk-file-name" name="bulk-file-name" value="report"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 shadow-sm">
+                            Generate Report
+                        </button>
+                    </form>
+                </div>
             </aside>
 
             <!-- Data Preview Section -->
@@ -129,7 +228,7 @@
                             d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <h3 class="mt-2 text-sm font-medium">No data generated</h3>
-                    <p class="mt-1 text-sm">Use the form to generate a new report.</p>
+                    <p class="mt-1 text-sm">Complete the form to generate a new report.</p>
                 </div>
                 <div id="preview-container" class="overflow-x-auto hidden">
                     <table class="min-w-full divide-y divide-gray-200">

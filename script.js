@@ -91,7 +91,7 @@ const REPORT_CONFIGS = {
       admin: "feResponse.data.administrasi",
       fee: "feResponse.feeAmount",
       settlement: "esb.creditAmount",
-      flag_rekon: null,
+      flag_rekon: "MA",
     },
   },
   ReportBrimoASDP: {
@@ -131,6 +131,30 @@ const generateValueFromJson = (header, mappings, jsonData) => {
 
   const value = getValueFromPath(jsonData, mapping);
   return value !== null ? String(value) : "";
+};
+
+// --- Formatting Helpers ---
+const toDecimalString = (value) => {
+  const numeric = Number(String(value).replace(/[^0-9.-]/g, ""));
+  if (!isFinite(numeric)) return "";
+  return numeric.toFixed(2);
+};
+
+const toIntegerString = (value) => {
+  const numeric = Number(String(value).replace(/[^0-9.-]/g, ""));
+  if (!isFinite(numeric)) return "";
+  return String(Math.trunc(numeric));
+};
+
+const getKodeProduk = (jsonData) => {
+  const serviceId = getValueFromPath(jsonData, "feRequest.serviceId");
+  if (serviceId === "000RC" || serviceId === "000QZ") {
+    return "37";
+  } else if (serviceId === "000U7") {
+    return "32";
+  } else {
+    return "01";
+  }
 };
 
 // --- UI Rendering ---
@@ -177,9 +201,11 @@ const arrayToCsv = (headers, data, delimiter) => {
   csvRows.push(headers.join(delimiter));
   data.forEach((row) => {
     const values = headers.map((header) => {
-      const val = row[header] || "";
-      const escaped = val.toString().replace(/"/g, '""');
-      return `"${escaped}"`;
+      const val = row[header] ?? "";
+      // Emit raw value without quotes and without newlines to keep CSV row integrity
+      return String(val)
+        .replace(/\r?\n|\r/g, " ")
+        .replace(/"/g, "");
     });
     csvRows.push(values.join(delimiter));
   });
@@ -220,7 +246,7 @@ const addJsonInput = () => {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
-      </button>
+        </button>
     </div>
     <textarea name="json-input" rows="4"
       class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-mono"
@@ -292,7 +318,26 @@ const handleSingleGenerate = (e) => {
       const jsonData = JSON.parse(jsonInputValue);
       const row = {};
       generatedHeaders.forEach((header) => {
-        row[header] = generateValueFromJson(header, config.mappings, jsonData);
+        let v = generateValueFromJson(header, config.mappings, jsonData);
+        if (
+          singleReportTypeSelect.value === "ReportPegadaianBayar" &&
+          (header === "AMOUNT" || header === "ADMIN")
+        ) {
+          v = toDecimalString(v);
+        }
+        if (
+          singleReportTypeSelect.value === "ReportPegadaianCicil" &&
+          (header === "fee" || header === "settlement")
+        ) {
+          v = toIntegerString(v);
+        }
+        if (
+          singleReportTypeSelect.value === "ReportPegadaianCicil" &&
+          header === "kode_produk"
+        ) {
+          v = getKodeProduk(jsonData);
+        }
+        row[header] = v;
       });
       generatedData.push(row);
     } catch (error) {
@@ -350,7 +395,26 @@ const handleBulkGenerate = (e) => {
   generatedData = Array.from({ length: recordCount }, () => {
     const row = {};
     generatedHeaders.forEach((header) => {
-      row[header] = generateValueFromJson(header, config.mappings, jsonData);
+      let v = generateValueFromJson(header, config.mappings, jsonData);
+      if (
+        bulkReportTypeSelect.value === "ReportPegadaianBayar" &&
+        (header === "AMOUNT" || header === "ADMIN")
+      ) {
+        v = toDecimalString(v);
+      }
+      if (
+        bulkReportTypeSelect.value === "ReportPegadaianCicil" &&
+        (header === "fee" || header === "settlement")
+      ) {
+        v = toIntegerString(v);
+      }
+      if (
+        bulkReportTypeSelect.value === "ReportPegadaianCicil" &&
+        header === "kode_produk"
+      ) {
+        v = getKodeProduk(jsonData);
+      }
+      row[header] = v;
     });
     return row;
   });

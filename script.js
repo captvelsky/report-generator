@@ -28,102 +28,6 @@ const toast = document.getElementById("toast");
 let generatedData = [];
 let generatedHeaders = [];
 
-// --- Report Type Configurations ---
-const REPORT_CONFIGS = {
-  ReportPegadaianBayar: {
-    headers: [
-      "TGL_TRANSAKSI",
-      "CLIENT_ID",
-      "JENIS_TRANSAKSI",
-      "NO_KONTRAK",
-      "PRODUCT_CODE",
-      "REFF_ID_SWITCHING",
-      "AMOUNT",
-      "ADMIN",
-      "CHANNEL_ID",
-      "STATUS",
-    ],
-    mappings: {
-      TGL_TRANSAKSI: "feResponse.data.tglTransaksi",
-      CLIENT_ID: "feRequest.clientId",
-      JENIS_TRANSAKSI: "feRequest.jenisTransaksi",
-      NO_KONTRAK: "feRequest.norek",
-      PRODUCT_CODE: null,
-      REFF_ID_SWITCHING: "feRequest.reffSwitching",
-      AMOUNT: "feRequest.amount",
-      ADMIN: "feRequest.surcharge",
-      CHANNEL_ID: "feRequest.channelIdPegadaian",
-      STATUS: "feResponse.responseCode",
-    },
-  },
-  ReportPegadaianCicil: {
-    headers: [
-      "tgl_trx",
-      "no_kredit",
-      "reff_switching",
-      "reff_biller",
-      "client_id",
-      "kode_produk",
-      "jenis_trx",
-      "amount",
-      "admin",
-      "fee",
-      "settlement",
-      "flag_rekon",
-    ],
-    mappings: {
-      tgl_trx: "feResponse.data.tglTransaksi",
-      no_kredit: "feRequest.noIdentitas",
-      reff_switching: "feRequest.reffSwitching",
-      reff_biller: "feRequest.reffBiller",
-      client_id: "feRequest.clientId",
-      kode_produk: null,
-      jenis_trx: "feRequest.jenisTransaksi",
-      amount: "feResponse.data.nominalUangMuka",
-      admin: "feResponse.data.administrasi",
-      fee: "feResponse.feeAmount",
-      settlement: "esb.creditAmount",
-      flag_rekon: "MA",
-    },
-  },
-  ReportBrimoASDP: {
-    headers: [],
-    mappings: {},
-  },
-};
-
-// --- Utility Functions ---
-const getValueFromPath = (obj, path) => {
-  if (!path || !obj) return null;
-  const keys = path.split(".");
-  let current = obj;
-  for (const key of keys) {
-    if (current && typeof current === "object" && key in current) {
-      current = current[key];
-    } else {
-      return null;
-    }
-  }
-  return current;
-};
-
-const toDecimalString = (value) => {
-  const numeric = Number(String(value).replace(/[^0-9.-]/g, ""));
-  return isFinite(numeric) ? numeric.toFixed(2) : "";
-};
-
-const toIntegerString = (value) => {
-  const numeric = Number(String(value).replace(/[^0-9.-]/g, ""));
-  return isFinite(numeric) ? String(Math.trunc(numeric)) : "";
-};
-
-const getKodeProduk = (jsonData) => {
-  const serviceId = getValueFromPath(jsonData, "feRequest.serviceId");
-  if (serviceId === "000RC" || serviceId === "000QZ") return "37";
-  if (serviceId === "000U7" || serviceId === "000U8") return "32";
-  return "01";
-};
-
 // --- Core Logic ---
 const generateReportRow = (reportType, headers, mappings, jsonData) => {
   const row = {};
@@ -131,29 +35,12 @@ const generateReportRow = (reportType, headers, mappings, jsonData) => {
     let value;
     const mapping = mappings[header];
 
-    if (mapping === null) {
-      if (
-        (reportType === "ReportPegadaianCicil" && header === "kode_produk") ||
-        (reportType === "ReportPegadaianBayar" && header === "PRODUCT_CODE")
-      ) {
-        value = getKodeProduk(jsonData);
-      } else {
-        value = "";
-      }
+    if (typeof mapping === 'function') {
+      value = mapping(jsonData);
     } else if (mapping && !mapping.includes(".")) {
       value = mapping;
     } else {
       value = getValueFromPath(jsonData, mapping);
-    }
-
-    if (reportType === "ReportPegadaianBayar") {
-      if (header === "AMOUNT" || header === "ADMIN") {
-        value = toDecimalString(value);
-      }
-    } else if (reportType === "ReportPegadaianCicil") {
-      if (header === "fee" || header === "settlement") {
-        value = toIntegerString(value);
-      }
     }
 
     row[header] = value !== null ? String(value) : "";
@@ -282,7 +169,7 @@ const handleSingleGenerate = (e) => {
     return;
   }
 
-  const config = REPORT_CONFIGS[reportType];
+  const config = window.REPORT_CONFIGS[reportType];
   if (!config || config.headers.length === 0) {
     alert("Selected report type is not configured yet");
     return;
@@ -338,7 +225,7 @@ const handleBulkGenerate = (e) => {
     return;
   }
 
-  const config = REPORT_CONFIGS[reportType];
+  const config = window.REPORT_CONFIGS[reportType];
   if (!config || config.headers.length === 0) {
     alert("Selected report type is not configured yet");
     return;

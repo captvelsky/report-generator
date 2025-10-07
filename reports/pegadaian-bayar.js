@@ -1,0 +1,26 @@
+const ReportPegadaianBayar = {
+  headers: [
+    "TGL_TRANSAKSI",
+    "CLIENT_ID",
+    "JENIS_TRANSAKSI",
+    "NO_KONTRAK",
+    "PRODUCT_CODE",
+    "REFF_ID_SWITCHING",
+    "AMOUNT",
+    "ADMIN",
+    "CHANNEL_ID",
+    "STATUS",
+  ],
+  mappings: {
+    TGL_TRANSAKSI: "feResponse.data.tglTransaksi",
+    CLIENT_ID: "feRequest.clientId",
+    JENIS_TRANSAKSI: "feRequest.jenisTransaksi",
+    NO_KONTRAK: "feRequest.norek",
+    PRODUCT_CODE: (jsonData) => getKodeProduk(jsonData),
+    REFF_ID_SWITCHING: "feRequest.reffSwitching",
+    AMOUNT: (jsonData) => toDecimalString(getValueFromPath(jsonData, "feRequest.amount")),
+    ADMIN: (jsonData) => toDecimalString(getValueFromPath(jsonData, "feRequest.surcharge")),
+    CHANNEL_ID: "feRequest.channelIdPegadaian",
+    STATUS: "feResponse.responseCode",
+  },
+};

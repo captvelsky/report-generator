@@ -40,16 +40,16 @@
                     <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
                         <button id="tab-single"
                             class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 bg-white text-blue-700 shadow-sm">
-                            Single Row
+                            Single
                         </button>
                         <button id="tab-bulk"
                             class="flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 text-gray-500 hover:text-gray-700">
-                            Bulk Generation
+                            Bulk
                         </button>
                     </div>
                 </div>
 
-                <!-- Tab 1: Single Row Generation -->
+                <!-- Tab 1: Single Generation -->
                 <div id="tab-content-single" class="tab-content">
                     <form id="single-generator-form" class="space-y-6">
                         <!-- Report Type Selection -->
@@ -116,7 +116,7 @@
                     </form>
                 </div>
 
-                <!-- Tab 2: Bulk Generation -->
+                <!-- Tab 2: Bulk -->
                 <div id="tab-content-bulk" class="tab-content hidden">
                     <form id="bulk-generator-form" class="space-y-6">
                         <!-- Report Type Selection -->
@@ -136,32 +136,7 @@
                                 Data</label>
                             <textarea id="bulk-json-input" name="bulk-json-input" rows="8"
                                 class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-mono"
-                                placeholder="Paste your JSON data here...">{
-  "feRequest": {
-    "client_id": "CLIENT123",
-    "jenisTransaksi": "BAYAR",
-    "norek": "1234567890",
-    "reffSwitching": "REF123456",
-    "amount": "500000",
-    "surcharge": "2500",
-    "channelIdPegadaian": "CH001",
-    "noIdentitas": "ID987654321",
-    "reffBiller": "BILLER789",
-    "clientId": "CLIENT456"
-  },
-  "feResponse": {
-    "data": {
-      "tglTransaksi": "20241201120000",
-      "nominalUangMuka": "100000",
-      "administrasi": "5000"
-    },
-    "responseCode": "00",
-    "feeAmount": "1000"
-  },
-  "esb": {
-    "creditAmount": "495000"
-  }
-}</textarea>
+                                placeholder="Paste your JSON data here...">{ "feRequest": { "client_id": "CLIENT123", "jenisTransaksi": "BAYAR", "norek": "1234567890", "reffSwitching": "REF123456", "amount": "500000", "surcharge": "2500", "channelIdPegadaian": "CH001", "noIdentitas": "ID987654321", "reffBiller": "BILLER789", "clientId": "CLIENT456" }, "feResponse": { "data": { "tglTransaksi": "20241201120000", "nominalUangMuka": "100000", "administrasi": "5000" }, "responseCode": "00", "feeAmount": "1000" }, "esb": { "creditAmount": "495000" } }</textarea>
                             <p class="text-xs text-gray-500 mt-1">Enter the JSON data that will be used to generate the
                                 report values</p>
                         </div>

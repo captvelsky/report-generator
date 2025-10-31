@@ -283,23 +283,66 @@ const handleCopy = () => {
     : bulkDelimiterSelect.value;
   const csvContent = arrayToCsv(generatedHeaders, generatedData, delimiter);
 
-  navigator.clipboard
-    .writeText(csvContent)
-    .then(() => {
-      toast.textContent = "Copied to clipboard!";
-      toast.className = "toast show";
-      setTimeout(() => {
-        toast.className = toast.className.replace("show", "");
-      }, 3000);
-    })
-    .catch((err) => {
-      console.error("Copy failed", err);
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard
+      .writeText(csvContent)
+      .then(() => {
+        toast.textContent = "Copied to clipboard!";
+        toast.className = "toast show";
+        setTimeout(() => {
+          toast.className = toast.className.replace("show", "");
+        }, 3000);
+      })
+      .catch((err) => {
+        console.error("Copy failed", err);
+        toast.textContent = "Copy failed!";
+        toast.className = "toast show";
+        setTimeout(() => {
+          toast.className = toast.className.replace("show", "");
+        }, 3000);
+      });
+  } else {
+    // Fallback for insecure contexts
+    const textArea = document.createElement("textarea");
+    textArea.value = csvContent;
+    textArea.style.position = "fixed"; // Prevent scrolling to bottom of page in MS Edge.
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.width = "2em";
+    textArea.style.height = "2em";
+    textArea.style.padding = "0";
+    textArea.style.border = "none";
+    textArea.style.outline = "none";
+    textArea.style.boxShadow = "none";
+    textArea.style.background = "transparent";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        toast.textContent = "Copied to clipboard!";
+        toast.className = "toast show";
+        setTimeout(() => {
+          toast.className = toast.className.replace("show", "");
+        }, 3000);
+      } else {
+        toast.textContent = "Copy failed!";
+        toast.className = "toast show";
+        setTimeout(() => {
+          toast.className = toast.className.replace("show", "");
+        }, 3000);
+      }
+    } catch (err) {
+      console.error("Fallback copy failed", err);
       toast.textContent = "Copy failed!";
       toast.className = "toast show";
       setTimeout(() => {
         toast.className = toast.className.replace("show", "");
       }, 3000);
-    });
+    }
+    document.body.removeChild(textArea);
+  }
 };
 
 // --- Initial Setup ---

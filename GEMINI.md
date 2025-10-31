@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-This project is a web-based utility for generating custom CSV reports. It features a user-friendly interface where users can choose between "Single Row" and "Bulk Generation" modes.
+This project is a web-based utility for generating custom CSV reports. It features a user-friendly interface where users can choose between "Single" and "Bulk" modes.
 
-In "Single Row" mode, users can generate a report from one or more JSON objects. In "Bulk Generation" mode, users can generate a report with a specified number of records based on a single JSON object.
+In "Single" mode, users can generate a report from one or more JSON objects. In "Bulk" mode, users can generate a report with a specified number of records based on a single JSON object.
 
 The application supports predefined report types, each with its own set of headers and mappings to JSON data. Users can preview the generated data and then copy it to the clipboard or download it as a CSV file.
 

@@ -1,10 +1,10 @@
 # Report Generator
 
-The Report Generator is a web-based tool designed to streamline the creation of CSV reports from JSON data. It provides a user-friendly interface for generating reports in various formats, catering to both single-row and bulk data generation needs. This tool is ideal for developers, data analysts, and anyone requiring quick and customizable CSV report generation.
+The Report Generator is a web-based tool designed to streamline the creation of CSV reports from JSON data. It provides a user-friendly interface for generating reports in various formats, catering to both single and bulk data generation needs. This tool is ideal for developers, data analysts, and anyone requiring quick and customizable CSV report generation.
 
 ## Features
 
-- **Multiple Generation Modes**: Supports both single-row and bulk report generation to accommodate different use cases.
+- **Multiple Generation Modes**: Supports both single and bulk report generation to accommodate different use cases.
 - **Customizable Report Types**: Easily extendable to support various report formats through a simple configuration-based system.
 - **Flexible Delimiter Support**: Allows users to choose from common delimiters such as comma, semicolon, tab, and pipe.
 - **User-Friendly Interface**: An intuitive and easy-to-navigate interface for a seamless user experience.
@@ -14,9 +14,9 @@ The Report Generator is a web-based tool designed to streamline the creation of 
 
 ## How to Use
 
-### Single Row Generation
+### Single Generation
 
-1.  **Select the "Single Row" Tab**: This is the default mode for generating a report from one or more distinct JSON objects.
+1.  **Select the "Single" Tab**: This is the default mode for generating a report from one or more distinct JSON objects.
 2.  **Choose a Report Type**: Select the desired report format from the "Report Type" dropdown menu.
 3.  **Enter JSON Data**: Paste your JSON data into the provided text area. You can add multiple JSON inputs by clicking the "+ Add Another JSON" button. Each JSON object will correspond to a single row in the generated report.
 4.  **Configure Options**:
@@ -27,7 +27,7 @@ The Report Generator is a web-based tool designed to streamline the creation of 
 
 ### Bulk Generation
 
-1.  **Select the "Bulk Generation" Tab**: Switch to this mode if you need to generate a large number of records based on a single JSON template.
+1.  **Select the "Bulk" Tab**: Switch to this mode if you need to generate a large number of records based on a single JSON template.
 2.  **Choose a Report Type**: Select the desired report format.
 3.  **Enter JSON Template**: Paste a single JSON object that will serve as a template for all the records.
 4.  **Configure Options**:
@@ -92,7 +92,7 @@ window.REPORT_CONFIGS = {
 
 ### 3. Update `index.html`
 
--   Finally, add a new `<option>` in the "Report Type" select dropdowns in `index.html` for both single and bulk generation.
+-   Finally, add a new `<option>` in the "Report Type" select dropdowns in `index.html` for both single and bulk.
 
 **Example: `index.html`**
 

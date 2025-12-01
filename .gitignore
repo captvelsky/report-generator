@@ -7,3 +7,4 @@ output.css
 
 # dotenv environment variables file
 .env
+report_generator.zip

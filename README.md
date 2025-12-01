@@ -1,16 +1,43 @@
 # Report Generator
 
-The Report Generator is a web-based tool designed to streamline the creation of CSV reports from JSON data. It provides a user-friendly interface for generating reports in various formats, catering to both single and bulk data generation needs. This tool is ideal for developers, data analysts, and anyone requiring quick and customizable CSV report generation.
+The Report Generator is a web-based tool designed to streamline the creation of CSV reports from JSON data. It provides a user-friendly interface for generating reports in various formats, catering to both single and bulk data generation needs. This tool is ideal for anyone requiring quick and customizable CSV report generation.
 
 ## Features
 
 - **Multiple Generation Modes**: Supports both single and bulk report generation to accommodate different use cases.
 - **Customizable Report Types**: Easily extendable to support various report formats through a simple configuration-based system.
+    - **Active Reports**: `ReportPegadaianBayar`
+    - **Available (Disabled)**: `ReportPegadaianCicil`, `ReportBrimoASDP` (Enable in `reports/index.js`)
 - **Flexible Delimiter Support**: Allows users to choose from common delimiters such as comma, semicolon, tab, and pipe.
 - **User-Friendly Interface**: An intuitive and easy-to-navigate interface for a seamless user experience.
 - **Data Preview**: Displays a preview of the generated data before downloading, ensuring accuracy and correctness.
 - **Copy to Clipboard**: Provides an option to copy the generated CSV data directly to the clipboard.
 - **Download as CSV**: Enables users to download the generated report as a CSV file with a customizable file name.
+
+## Usage
+
+### Running the App
+
+This is a client-side project. To use the application:
+
+1.  Open the `index.html` file directly in a web browser.
+
+No server or build step is required for basic usage as the styles are pre-compiled in `output.css`.
+
+### Development
+
+If you wish to modify the styles or develop the project further:
+
+1.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+
+2.  **Run Tailwind CSS**:
+    Watch for changes and rebuild `output.css`:
+    ```bash
+    npx tailwindcss -i ./styles.css -o ./output.css --watch
+    ```
 
 ## How to Use
 
@@ -75,7 +102,8 @@ const MyReport = {
 ### 2. Register the New Report Type
 
 -   Open the `reports/index.js` file.
--   Import your new report configuration and add it to the `window.REPORT_CONFIGS` object. The key should be the name you want to display in the "Report Type" dropdown, and the value should be the configuration object you just created.
+-   Import your new report configuration (if using modules) or ensure the script is loaded in `index.html`.
+-   Add it to the `window.REPORT_CONFIGS` object. The key should be the name you want to display in the "Report Type" dropdown, and the value should be the configuration object you just created.
 
 **Example: `reports/index.js`**
 
@@ -92,11 +120,15 @@ window.REPORT_CONFIGS = {
 
 ### 3. Update `index.html`
 
--   Finally, add a new `<option>` in the "Report Type" select dropdowns in `index.html` for both single and bulk.
+-   Add a script tag for your new report file *before* `reports/index.js`.
+-   Add a new `<option>` in the "Report Type" select dropdowns in `index.html` for both single and bulk.
 
 **Example: `index.html`**
 
 ```html
+<!-- Load report script -->
+<script src="reports/my-report.js"></script>
+<!-- ... -->
 <select id="single-report-type" name="single-report-type" class="...">
     <option value="">Select Report Type</option>
     <option value="ReportPegadaianBayar">Report Pegadaian Bayar</option>
